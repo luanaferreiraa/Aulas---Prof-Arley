@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Valley+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Merriweather;
+    background-color: rgb(255, 255, 255)
+}
+
+main {
+    max-width: 38rem;
+    margin: 2rem auto;
+    padding: 1.25rem;
+    background-color: #eaaac8;
+    border: 1px solid #0d0d0d;
+}
+
+#cidade {
+    width: 100%;
+    padding: 0.625rem;
+    font-size: 1rem;
+}
+
+.cidade {
+    width: 100%;
+    padding: 0.625rem;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    border: 1px solid #e0e0e0;
+}
+
+.cidade:hover {
+    background-color: #e0e0e0;
+}
+
+#previsao {
+    margin-top: 1rem;
+}
+
+.dia {
+    padding: 0.625rem;
+    border: 1px solid #ccc;
+}
