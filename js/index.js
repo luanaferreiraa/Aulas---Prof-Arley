@@ -4,67 +4,92 @@ let elementoCidades = document.querySelector("#cidades");
 let elementoPrevisao = document.querySelector("#previsao");
 
 campoCidade.addEventListener("keydown", function (evento) {
-  if (evento.key == "Enter") {
-    buscarCidades();
-  }
+    if( evento.key == "Enter") {
+        buscarCidades();
+    }
+
 });
 
 async function buscarCidades() {
-  let nome = campoCidade.value;
+    let nome = campoCidade.value.trim();
+    if(nome == ""){
 
-  elementoMensagem.textContent = "Buscando . . .";
-  elementoCidades.innerHTML = "";
-  elementoPrevisao.innerHTML = "";
+    elementoMensagem.textContent = "Digite o nome da cidade:";
+    } else{
 
-  let resposta = await fetch(
-    `https://brasilapi.com.br/api/cptec/v1/cidade/${nome}`,
-  );
+        elementoMensagem.textContent = "Buscando...";
+        elementoCidades.innerHTML = "";
+        elementoPrevisao.innerHTML = "";
 
-  let dados = await resposta.json();
+        let resposta = await fetch(
+        `https://brasilapi.com.br/api/cptec/v1/cidade/${nome}`,
+    );
 
-  if (resposta.ok) {
-    for (let i = 0; i < dados.length; i++) {
-      let elementoCidade = document.createElement("p");
-      elementoCidade.textContent = `${dados[i].nome} - ${dados[i].estado}`;
-      elementoCidade.classList.add("cidade");
-      elementoCidade.addEventListener("click", function () {
-        buscarPrevisao(dados[i].id);
-      });
-      elementoCidades.appendChild(elementoCidade);
+    let dados = await resposta.json();
+
+    if (resposta.ok) {
+        
+        for (let i = 0; i < dados.length; i++ ){
+            let elementoCidade = document.createElement("button");
+            elementoCidade.type = ("button");
+            elementoCidade.textContent = `${dados[i].nome} - ${dados[i].estado}`;
+            elementoCidade.classList.add("cidade");
+            elementoCidade.addEventListener("click", function (){
+            buscarPrevisao(dados[i].id);   
+            })
+
+            elementoCidades.appendChild(elementoCidade);
+        }   
+        elementoMensagem.textContent =  `${dados.length} cidade(s) encontradas(s)`;
+        
+    } else {
+        elementoMensagem.textContent = "Nenhuma cidade localizada. ";
     }
-    elementoMensagem.textContent = "";
-  } else {
-    elementoMensagem.textContent = dados.message;
-  }
+
+    }
+
 }
 
 async function buscarPrevisao(id) {
-  elementoPrevisao.textContent = "Buscando . . .";
 
-  let resposta = await fetch(
-    `https://brasilapi.com.br/api/cptec/v1/clima/previsao/${id}`,
-  );
+    elementoPrevisao.textContent = "Buscando...";
 
-  let dados = await resposta.json();
+     let resposta = await fetch(
+        `https://brasilapi.com.br/api/cptec/v1/clima/previsao/${id}`,
+    );
+    let dados = await resposta.json();
 
-  if (resposta.ok) {
-    elementoPrevisao.innerHTML = `
-    <h2>${dados.cidade} - ${dados.estado}</h2>
-      <div class="dia">
-      <p> Data: ${formatarData(dados.clima[0].data)}</p>
-      <p> Condição: ${dados.clima[0].condicao_desc}</p>
-      <p> Temperatura Mínima: ${dados.clima[0].min} °C</p>
-      <p> Temperatura Máxima: ${dados.clima[0].max} °C</p>
-      <p> Índice UV: ${dados.clima[0].indice_uv}</p>
-      </div>
-    `;
-    console.log(dados);
-  } else {
-    elementoPrevisao.textContent = dados.message;
-  }
+     if (resposta.ok) {
+
+        let dias = `
+        <article class= "dia"> 
+
+            <p class="data">${formatarData(dados.clima[0].data)}</p>
+            <p>${dados.clima[0].condicao_desc}</p>
+            <div class="temperaturas">
+            <span><strong> ${dados.clima[0].min} °</strong>Minima</span>
+            <span><strong> ${dados.clima[0].max} °</strong>Maxima</span>
+            </div>
+            <p> Índice UV: ${dados.clima[0].indice_uv}</p>
+        </article>
+        `;
+
+        elementoPrevisao.innerHTML = `
+        <h2>${dados.cidade} - ${dados.estado}</h2>
+        <div class= "dias">${dias}</div>
+
+    
+        `;
+        elementoCidades.innerHTML = "";
+        elementoMensagem.textContent = "";
+        
+    } else {
+        elementoPrevisao.textContent = dados.message;
+    }
+
 }
+ function formatarData(data){
+    let partes = data.split("-");
+    return `${partes[2]}/${partes[1]}/${partes[0]}`
 
-function formatarData(data) {
-  let partes = data.split("-");
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
-}
+ }
